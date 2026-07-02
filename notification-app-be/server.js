@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 
 import connectDB from "./config/db.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import { requestLogger } from "./middleware/logger.js";
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ connectDB();
 app.use(cors());
 
 app.use(express.json());
+app.use(requestLogger);
 
 app.get("/", (req, res) => {
   res.send("Notification Backend Running...");
