@@ -3,10 +3,13 @@ import {
   Alert,
   Badge,
   Box,
+  Button,
   CircularProgress,
   Divider,
+  MenuItem,
   Pagination,
   Stack,
+  TextField,
   Typography,
 } from "@mui/material";
 
@@ -15,11 +18,16 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import { NotificationCard } from "../components/NotificationCard";
 import { NotificationFilter } from "../components/NotificationFilter";
 import { useNotifications } from "../hooks/useNotifications";
+import { createNotification } from "../api/notifications";
 
 export function NotificationsPage() {
 
   const [filter, setFilter] = useState("All");
   const [page, setPage] = useState(1);
+
+  const [title, setTitle] = useState("");
+  const [message, setMessage] = useState("");
+  const [type, setType] = useState("Placement");
 
   const {
     notifications,
@@ -40,6 +48,39 @@ export function NotificationsPage() {
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
   };
+
+  async function handleAddNotification() {
+
+    if (title.trim() === "" || message.trim() === "") {
+      alert("Please fill all fields");
+      return;
+    }
+
+    const newNotification = {
+      title,
+      message,
+      type
+    };
+
+    try {
+
+      await createNotification(newNotification);
+
+      alert("Notification Added Successfully");
+
+      setTitle("");
+      setMessage("");
+      setType("Placement");
+
+      window.location.reload();
+
+    } catch (err) {
+
+      alert("Failed to Add Notification");
+
+    }
+
+  }
 
   let filteredNotifications = notifications;
 
@@ -70,6 +111,60 @@ export function NotificationsPage() {
       </Stack>
 
       <Divider sx={{ my: 3 }} />
+
+      {/* Add Notification Form */}
+
+      <Box
+        sx={{
+          border: "1px solid lightgray",
+          borderRadius: 2,
+          padding: 2,
+          marginBottom: 3
+        }}
+      >
+
+        <Typography variant="h6" mb={2}>
+          Add Notification
+        </Typography>
+
+        <Stack spacing={2}>
+
+          <TextField
+            label="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            fullWidth
+          />
+
+          <TextField
+            label="Message"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            fullWidth
+          />
+
+          <TextField
+            select
+            label="Type"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            fullWidth
+          >
+            <MenuItem value="Placement">Placement</MenuItem>
+            <MenuItem value="Result">Result</MenuItem>
+            <MenuItem value="Event">Event</MenuItem>
+          </TextField>
+
+          <Button
+            variant="contained"
+            onClick={handleAddNotification}
+          >
+            Add Notification
+          </Button>
+
+        </Stack>
+
+      </Box>
 
       <NotificationFilter
         value={filter}
@@ -104,7 +199,7 @@ export function NotificationsPage() {
             <Stack spacing={2}>
               {currentNotifications.map((item) => (
                 <NotificationCard
-                  key={item.id}
+                  key={item._id}
                   notification={item}
                 />
               ))}

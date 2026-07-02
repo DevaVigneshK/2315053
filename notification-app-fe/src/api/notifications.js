@@ -1,60 +1,55 @@
+const BASE_URL = "http://localhost:5000/notifications";
+
+// Get all notifications
 export async function fetchNotifications() {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        total: 6,
-        notifications: [
-          {
-            id: 1,
-            title: "Placement Drive",
-            message: "AffordMed hiring starts tomorrow.",
-            type: "Placement",
-            isRead: false,
-          },
-          {
-            id: 2,
-            title: "Semester Result",
-            message: "Your semester result has been published.",
-            type: "Result",
-            isRead: true,
-          },
-          {
-            id: 3,
-            title: "Hackathon",
-            message: "24-hour coding event this weekend.",
-            type: "Event",
-            isRead: false,
-          },
-          {
-            id: 4,
-            title: "Placement Training",
-            message: "Aptitude class at 10 AM.",
-            type: "Placement",
-            isRead: true,
-          },
-          {
-            id: 5,
-            title: "Sports Day",
-            message: "Annual sports meet on Friday.",
-            type: "Event",
-            isRead: false,
-          },
-          {
-            id: 6,
-            title: "Exam Result",
-            message: "Internal marks uploaded.",
-            type: "Result",
-            isRead: true,
-          },
-          {
-            id: 7,
-            title: "Alarm",
-            message: "Prepare DSA and Solve.",
-            type: "Result",
-            isRead: true,
-          },
-        ],
-      });
-    }, 1000);
+  const response = await fetch(BASE_URL);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch notifications");
+  }
+
+  return await response.json();
+}
+
+// Create a new notification
+export async function createNotification(notification) {
+  const response = await fetch(BASE_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(notification)
   });
+
+  if (!response.ok) {
+    throw new Error("Failed to create notification");
+  }
+
+  return await response.json();
+}
+
+// Mark notification as read
+export async function markNotificationAsRead(id) {
+  const response = await fetch(`${BASE_URL}/${id}/read`, {
+    method: "PATCH"
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update notification");
+  }
+
+  return await response.json();
+}
+
+// Delete notification
+export async function deleteNotification(id) {
+  const response = await fetch(`${BASE_URL}/${id}`, {
+    method: "DELETE"
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete notification");
+  }
+
+  return await response.json();
 }
